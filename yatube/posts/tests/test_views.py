@@ -311,7 +311,7 @@ class FollowTest(TestCase):
         self.user_following = User.objects.create_user(username='unfollower')
 
     def test_following(self):
-        response = self.authorized_client.get(reverse(
+        self.authorized_client.get(reverse(
             'posts:profile_follow',
             kwargs={
                 'username': self.user_following.username}))
