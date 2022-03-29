@@ -4,7 +4,7 @@
 {% block content %}
 <div class='container py-5'>
 {% cache 20 index_page with page %}
-    {% include 'includes/switcher.html' %}
+    {% include 'includes/switcher.html' with follow=True %}
         {% for post in page_obj %}
     {% include 'includes/post_index_follow.html' %}
         {% endfor %}

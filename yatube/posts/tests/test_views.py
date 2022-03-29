@@ -1,12 +1,15 @@
+import tempfile
+
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.shortcuts import get_object_or_404
 from django.test import Client, TestCase
 from django.urls import reverse
-import tempfile
-from ..models import Group, Post, Comment, Follow
-from django.core.files.uploadedfile import SimpleUploadedFile
+
+from ..models import Comment, Follow, Group, Post
 
 User = get_user_model()
 
@@ -289,7 +292,7 @@ class CacheTests(TestCase):
         first_state = self.authorized_client.get(reverse(
             'posts:index'
         ))
-        post_0 = Post.objects.get(pk=1)
+        post_0 = get_object_or_404(Post, pk=1)
         post_0.text = 'Test text2'
         post_0.save()
         second_state = self.authorized_client.get(reverse(
@@ -304,22 +307,50 @@ class CacheTests(TestCase):
 
 class FollowTest(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username='TestName')
-        self.authorized_client = Client()
-        self.authorized_client.force_login(self.user)
+        self.authorized_client_follower = Client()
+        self.authorized_client_following = Client()
         self.user_follower = User.objects.create_user(username='follower')
         self.user_following = User.objects.create_user(username='unfollower')
+        self.authorized_client_follower.force_login(self.user_follower)
+        self.authorized_client_following.force_login(self.user_following)
+        self.post = Post.objects.create(
+            author=self.user_following,
+            text='Test post'
+        )
 
-    def test_following(self):
-        self.authorized_client.get(reverse(
+    def test_follow(self):
+        self.authorized_client_follower.get(reverse(
             'posts:profile_follow',
             kwargs={
-                'username': self.user_following.username}))
+                'username': self.user_following.username
+            }
+        ))
         self.assertEqual(Follow.objects.all().count(), 1)
 
     def test_unfollow(self):
-        self.authorized_client.get(reverse(
+        self.authorized_client_follower.get(reverse(
+            'posts:profile_follow',
+            kwargs={
+                'username': self.user_following.username}
+        ))
+        self.authorized_client_follower.get(reverse(
             'posts:profile_unfollow',
             kwargs={
-                'username': self.user_following.username}))
+                'username': self.user_following.username}
+        ))
         self.assertEqual(Follow.objects.all().count(), 0)
+
+    def test_subscription_feed(self):
+        Follow.objects.create(
+            user=self.user_follower,
+            author=self.user_following
+        )
+        response = self.authorized_client_follower.get(reverse(
+            'posts:follow_index'
+        ))
+        post_text_0 = response.context["page_obj"][0].text
+        self.assertEqual(post_text_0, self.post.text)
+        response = self.authorized_client_following.get(reverse(
+            'posts:follow_index'
+        ))
+        self.assertNotContains(response, self.post.text)
