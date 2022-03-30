@@ -107,3 +107,4 @@ class FormTest(TestCase):
         post_edit = Comment.objects.order_by('id').last()
         self.assertEqual(post_edit.text, form_data['text'])
         self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(post_edit.post_id, self.post.id)

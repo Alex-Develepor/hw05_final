@@ -292,7 +292,7 @@ class CacheTests(TestCase):
         first_state = self.authorized_client.get(reverse(
             'posts:index'
         ))
-        post_0 = get_object_or_404(Post, pk=1)
+        post_0 = get_object_or_404(Post, pk=self.post.pk)
         post_0.text = 'Test text2'
         post_0.save()
         second_state = self.authorized_client.get(reverse(
@@ -326,6 +326,10 @@ class FollowTest(TestCase):
             }
         ))
         self.assertEqual(Follow.objects.all().count(), 1)
+        self.assertEqual(
+            Follow.objects.order_by('id').last().author,
+            self.user_following
+        )
 
     def test_unfollow(self):
         self.authorized_client_follower.get(reverse(
@@ -339,6 +343,10 @@ class FollowTest(TestCase):
                 'username': self.user_following.username}
         ))
         self.assertEqual(Follow.objects.all().count(), 0)
+        self.assertNotEqual(
+            Follow.objects.order_by('id').last(),
+            self.user_following
+        )
 
     def test_subscription_feed(self):
         Follow.objects.create(
