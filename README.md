@@ -1,3 +1,62 @@
-# hw05_final
+# **hw05_final**
+### **Описание**
+Социальная сеть блогеров. **Учебный проект**.
 
-[![CI](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml)
+Сообщество для публикаций. Блог с возможностью публикации постов, подпиской на группы и авторов, а также комментированием постов.
+
+### **Стек**
+![python version](https://img.shields.io/badge/Python-3.8-green)
+![django version](https://img.shields.io/badge/Django-2.2-green)
+![pytest version](https://img.shields.io/badge/pytest-6.2-green)
+![requests version](https://img.shields.io/badge/requests-2.26-green)
+![sorl-thumbnail version](https://img.shields.io/badge/thumbnail-12.7-green)
+
+### **Запуск проекта в dev-режиме**
+
+1. Клонируйте репозиторий и перейдите в него в командной строке:
+
+```
+git clone https://github.com/evencatt/hw05_final.git
+```
+
+```
+cd hw05_final
+```
+
+2. Установите и активируйте виртуальное окружение
+```
+python -m venv venv
+``` 
+```
+source venv/Scripts/activate
+```
+
+3. Установите зависимости из файла requirements.txt
+```
+pip install -r requirements.txt
+```
+
+4. В папке с файлом manage.py выполните миграции:
+```
+python manage.py migrate
+```
+
+5. В папке с файлом manage.py запустите сервер, выполнив команду:
+```
+python manage.py runserver
+```
+
+### *Что могут делать пользователи*:
+
+Залогиненные пользователи могут:
+1. Просматривать, публиковать, удалять и редактировать свои публикации;
+2. Просматривать информацию о сообществах;
+3. Просматривать и публиковать комментарии от своего имени к публикациям других пользователей (включая самого себя), удалять и редактировать свои комментарии;
+4. Подписываться на других пользователей и просматривать свои подписки.
+***Примечание***: Доступ ко всем операциям записи, обновления и удаления доступны только после аутентификации и получения токена.
+
+Анонимные пользователи могут:
+1. Просматривать публикации;
+2. Просматривать информацию о сообществах;
+3. Просматривать комментарии;
+
